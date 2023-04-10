@@ -15,7 +15,7 @@ Se utilizarán diferentes tecnologías para la creación y el procesamiento del 
 Python: para la recolección y limpieza de los datos.
 Pandas: para la manipulación y estructuración de los datos.
 newspaper: Para el scrapy de las recetas
-bs4: Sacar la información de HTML
+bs4: Sacar la información
 
 ## Licencia
 Este proyecto se distribuirá bajo la licencia MIT. Esto significa que cualquier persona puede utilizar y modificar el dataset para fines comerciales o no comerciales, siempre y cuando se le dé crédito al proyecto original y se incluya una copia de la licencia.
