@@ -139,7 +139,7 @@ def main():
         copy_dir.mkdir(parents=True, exist_ok=True)
         print(f"Saving info from {tag} in {save_dir}")
         for idx,link in enumerate(links_txt):
-            links_batch = np.loadtxt(fname=link, dtype=str)
+            links_batch = np.loadtxt(fname=link, dtype=str).tolist()
             save_file = save_dir/link.name.replace(".txt", ".csv")
             inter_batch(links_batch, save_file)
             print(f"\t{link} done!")
