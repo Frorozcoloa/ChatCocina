@@ -1,5 +1,3 @@
-from abc import ABC, abstractmethod
-import logging
 import numpy as np
 from pathlib import Path
 
@@ -7,13 +5,14 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from newspaper import Article
 
+from scraper_code.logging import logging
+
 
 DATASET = Path(__file__).parent.parent / "Datasets"
 LINKS = DATASET/"Links"
 SCRAPPER = DATASET/"Scrapper"
 COMPLETED = DATASET/"Completed"
-
-class Scrapper(ABC):
+class Scrapper:
     
     def __init__(self, name):
         self.links_path = LINKS / name
@@ -23,71 +22,49 @@ class Scrapper(ABC):
         self.completed_directory.mkdir(exist_ok=True)
     
     def gets_html(self, url):
-        article = Article(url)
+        article = Article(url, lenguage='es')
         article.download()
         article.parse()
-        soup = BeautifulSoup(article.html, 'html.parser')
-        return soup
-    
-    @abstractmethod
-    def get_introduction(self, soup):
-        pass
-    
-    @abstractmethod
-    def get_ingredients(self, soup):
-        pass
-    
-    @abstractmethod
-    def gets_steps(self, soup):
-        pass
-    
-    def get_title(self, article):
-        return article.title
-    
-    @abstractmethod
-    def get_votes(self, soup):
-        pass
+        return article
     
     def main(self):
         links_gen = self.links_path.glob("*.txt")
         for links_batch in links_gen:
-            logging.info(f":star: Processing {links_batch}")
+            print(f":star: Processing {links_batch}")
             links = np.loadtxt(fname=links_batch, dtype=str).tolist()
-            errors, values = self.gets_batch(links)
+            values, errors = self.gets_batch(links)
+            # Prepare datasets
             file_save = self.scrapper_directory/links_batch.name.replace(".txt", ".csv")
+            #Save dataset
             pd.DataFrame(values).to_csv(file_save, index=False)
-            self.scrapper_directory/"erros.txt".open("a").write("\n".join(errors))
-            logging.info(f":white_check_mark: Done {links_batch}")
-            links_batch.rename(self.completed_directory/links_batch)
-            
-            
-        
+            #Saver errors
+            with  self.scrapper_directory.with_name("errors.txt").open(mode='a') as f:
+                f.write('\n'.join(errors))
+            print(f":white_check_mark: Done {links_batch}")
+            #Cut to completed
+            links_batch.rename(self.completed_directory/links_batch.name)
+
     def gets_batch(self, links):
         values = []
         errors = []
         for url in links:
             try:
-                soup = self.gets_html(url)
-                title = self.get_title(soup)
-                order = self.gets_steps(soup)
-                intro = self.get_introduction(soup)
-                votes = self.get_votes(soup)
-                ingredients = self.get_ingredients(soup)
-                url = url
+                article = self.gets_html(url)
+                title = article.title
+                date = article.publish_date
+                url = article.url
+                text = article.text
                 info = {
+                    "url": url,
                     "title": title,
-                    "order": order,
-                    "intro": intro,
-                    "votes": votes,
-                    "ingredients": ingredients,
-                    "url": url
+                    "date": date,
+                    "text": text,
                 }
                 values.append(info)
+                print(f"\t :smiley: {url} done")
             except AttributeError:
-                logging.error(f"\t :angry: Error in {url}")
+                print(f"\t :angry: Error in {url}")
                 errors.append(url)
-            logging.info(f"\t :smiley: {url} done")
-            
         return values, errors
             
         

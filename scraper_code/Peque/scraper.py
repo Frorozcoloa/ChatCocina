@@ -8,23 +8,16 @@ class ScrapperPeque(Scrapper):
     def __init__(self, name):
         super().__init__(name)
     
-    def get_introduction(self, soup):
-        entry = soup.find("div", {"class": "entry"}).find_all("p")
-        intro = [p.text for p in entry]
-        intro = " ".join(intro)
-        return intro
+    def get_introduction(self, article):
+        return article.text
     
-    def get_ingredients(self, soup):
-        ingredients =  soup.find_all("li", {"class": "ingredientes"})
-        ingredients = [i.text for i in ingredients]
-        ingredients = " ".join(ingredients)
-        return ingredients
+    def get_ingredients(self, article):
+        text = article.text
+        ingredientes = text.slipt("Ingredientes")[-1]
+        ingregientes
     
-    def gets_steps(self, soup):
-        steps = soup.find_all("li", {"class": "instrucciones_pasos"})
-        steps = [s.text for s in steps]
-        steps = " ".join(steps)
-        return steps
+    def gets_steps(self, article):
+        return None
     
-    def get_votes(self, soup):
+    def get_votes(self, article):
         return None
