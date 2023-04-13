@@ -27,6 +27,10 @@ class Scrapper(ABC):
         pass
     
     @abstractmethod
+    def get_steps(self, html):
+        pass
+    
+    @abstractmethod
     def scrapping(self, url):
         pass
     

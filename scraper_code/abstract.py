@@ -11,7 +11,7 @@ class ScrapperLinks(ABC):
     def __init__(self, name, directory=LINKS):
         self.name = name
         self.__directory = directory/name
-        
+        self.__directory.mkdir(parents=True, exist_ok=True)
 
     @abstractmethod
     def get_links(self, page=None):
