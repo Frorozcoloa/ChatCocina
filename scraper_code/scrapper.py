@@ -4,7 +4,7 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 import pandas as pd
-from newspaper import Article
+from newspaper import Article, ArticleException
 
 from scraper_code.logging import logging
 
@@ -42,20 +42,30 @@ class Scrapper(ABC):
     
     def main(self):
         links_gen = self.links_path.glob("*.txt")
-        for links_batch in links_gen:
+        for idx,links_batch in enumerate(links_gen):
             print(f":star: Processing {links_batch}")
             links = np.loadtxt(fname=links_batch, dtype=str).tolist()
-            values, errors = self.gets_batch(links)
+            try: 
+                values, idx = self.gets_batch(links)
+            except ArticleException:
+                logging.error(f"Error in ")
+                continue
             # Prepare datasets
             file_save = self.scrapper_directory/links_batch.name.replace(".txt", ".csv")
             #Save dataset
             pd.DataFrame(values).to_csv(file_save, index=False)
             #Saver errors
-            with  self.scrapper_directory.with_name("errors.txt").open(mode='a') as f:
-                f.write('\n'.join(errors))
+            
             print(f":white_check_mark: Done {links_batch}")
             #Cut to completed
-            links_batch.rename(self.completed_directory/links_batch.name)
+            links_save = links[:idx]
+            links_dont_save = links[idx+1:]
+            links_directory_save = self.completed_directory/links_batch.name
+            links_directory_save.open("a").writelines("\n".join(links_save))
+            if len(links_dont_save) > 0:
+                links_batch.open("w").writelines("\n".join(links_dont_save))
+            else:
+                links_batch.unlink()
     
     
     def scraping_default(self, url):
@@ -85,13 +95,13 @@ class Scrapper(ABC):
     def gets_batch(self, links):
         values = []
         errors = []
-        for url in links:
+        for idx,url in enumerate(links):
             info = self.scrapping(url)
             if info is not None:
                 values.append(info)
             else:
                 errors.append(url)
-        return values, errors
+        return values, idx
             
         
     
