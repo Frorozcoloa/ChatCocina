@@ -4,6 +4,11 @@ from pathlib import Path
 
 class Recetas(ScrapperLinks):
     host = "https://www.recetas.com/p"
+    info_links = {
+        "url_format": "{}/recetas-internacionales/{}",
+        "last_page": 450,
+        "name": "recetas_interntacionales"
+    }
 
     UNIQUE_LINK =[
         "{}/recetas-ucranianas/",

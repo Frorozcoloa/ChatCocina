@@ -42,7 +42,7 @@ class Scrapper(ABC):
     
     def main(self):
         links_gen = self.links_path.glob("*.txt")
-        for idx,links_batch in enumerate(links_gen):
+        for links_batch in links_gen:
             print(f":star: Processing {links_batch}")
             links = np.loadtxt(fname=links_batch, dtype=str).tolist()
             try: 
