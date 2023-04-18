@@ -13,6 +13,7 @@ DATASET = Path(__file__).parent.parent / "Datasets"
 LINKS = DATASET/"Links"
 SCRAPPER = DATASET/"Scrapper"
 COMPLETED = DATASET/"Completed"
+
 class Scrapper(ABC):
     
     def __init__(self, name):

@@ -1,12 +1,15 @@
 from pathlib import Path
 
-from scraper_code.mycolombia.scrapper import MyColomian
-from scraper_code.recetas_pais.scrapper import RecetaPais
+from scraper_code.nestle.scrapper import NestleScrapper
+
 
 
 
     
 
 if __name__ == "__main__":
-   RecetaPais().main()
+       host = "https://www.recetasnestle.com.co"
+       url_formart = url = "https://www.recetasnestle.com.co/api/srh-recipe-category/{}?page={}&order=latest"
+       categories = ["658580", "658586", "658581", "658585", "660796", "660765"]
+       NestleScrapper(url_formart, host, categories).main()
 
