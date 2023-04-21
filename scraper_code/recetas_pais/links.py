@@ -4,11 +4,12 @@ from pathlib import Path
 
 class Recetas(ScrapperLinks):
     host = "https://www.recetas.com/p"
-    info_links = {
-        "url_format": "{}/recetas-internacionales/{}",
+    info_links = [{
+        "url_format": "{}/recetas-internacional/{}",
+        "firts_page": 144,
         "last_page": 450,
         "name": "recetas_interntacionales"
-    }
+    }]
 
     UNIQUE_LINK =[
         "{}/recetas-ucranianas/",
@@ -50,7 +51,7 @@ class Recetas(ScrapperLinks):
         return links
 
     def main(self):
-        self.unique_links()
+        self.get_links()
 
     def unique_links(self):
         save_aa = []
@@ -63,7 +64,8 @@ class Recetas(ScrapperLinks):
     def get_links(self):
         for info_link in self.info_links:
             values = []
-            for page in range(1, info_link["last_page"]+1):
+            firts_page = info_link["firts_page"] if "firts_page" in info_link else 1
+            for page in range(firts_page, info_link["last_page"]+1):
                 url = info_link["url_format"].format(self.host, page)
                 links = self.__get_links(url)
                 values += links
