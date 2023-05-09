@@ -31,9 +31,19 @@ class Scrapper(ABC):
     def get_steps(self, html):
         pass
     
-    @abstractmethod
     def scrapping(self, url):
-        pass
+        article = self.gets_html(url)
+        title = article.title
+        date = article.publish_date
+        url = article.url
+        try:
+            ingredientes = self.get_ingrediants(article.html)
+            steps = self.get_steps(article.html)
+            info = {"title": title, "date": date, "url": url, "ingredients": ingredientes, "steps": steps}
+            return info
+        except AttributeError:
+            print(f"\t :angry: Error in {url}")
+            return None
     
     def gets_html(self, url):
         article = Article(url, lenguage='es')
@@ -43,6 +53,7 @@ class Scrapper(ABC):
     
     def main(self):
         links_gen = self.links_path.glob("*.txt")
+        
         for links_batch in links_gen:
             print(f":star: Processing {links_batch}")
             links = np.loadtxt(fname=links_batch, dtype=str).tolist()
@@ -67,31 +78,7 @@ class Scrapper(ABC):
                 links_batch.open("w").writelines("\n".join(links_dont_save))
             else:
                 links_batch.unlink()
-    
-    
-    def scraping_default(self, url):
-        """
-        Default scrapping method, this metghod scraping by default,
-        if you extra information, you can get the html and use, is key for retunr a dict
-        """
-        try:
-            article = self.gets_html(url)
-            title = article.title
-            date = article.publish_date
-            url = article.url
-            text = article.text
-            info = {
-                "url": url,
-                "title": title,
-                "date": date,
-                "text": text,
-                "html": article.html,
-            }
-            print(f"\t :smiley: {url} done")
-            return info
-        except AttributeError:
-            print(f"\t :angry: Error in {url}")
-            return None
+            print(f":white_check_mark: Saved {links_batch}")
 
     def gets_batch(self, links):
         values = []
