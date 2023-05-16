@@ -1,6 +1,7 @@
-from pathlib import Path
+from scraper_code.okdiario.scrapper import LinksOkdiario, Okdiario
 
-from scraper_code.thermoreceta.scrapper import ThermoScrapper
 
 if __name__ == "__main__":
-       ThermoScrapper().main()
+    links = Okdiario()
+    links.main()
+    print("Done")
